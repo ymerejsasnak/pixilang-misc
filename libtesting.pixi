@@ -1,0 +1,61 @@
+include "toggle.pixi"
+
+
+resize( get_screen(), WINDOW_XSIZE, WINDOW_YSIZE )
+xmin = -WINDOW_XSIZE / 2
+xmax = WINDOW_XSIZE / 2
+ymin = -WINDOW_YSIZE / 2
+ymax = WINDOW_YSIZE / 2
+ 
+ 
+ 
+NUM_TOGGLES = 6
+t = 0
+toggles = new(NUM_TOGGLES)
+
+while (t < NUM_TOGGLES)
+{
+    toggles[t] = create_toggle(xmin + 10, ymin + 55 * t + t + 10, 100, 50, "")
+    t + 1
+}
+
+
+
+while(1)
+{
+	while get_event() 
+ 	{ 
+  		if EVT[ EVT_TYPE ] == EVT_QUIT { halt } 
+  		
+  		if EVT[ EVT_TYPE ] == EVT_MOUSEBUTTONDOWN
+  		{
+  		    x = EVT[ EVT_X ]
+  		    y = EVT[ EVT_Y ]
+  		    
+  		    t = 0
+  		    while(t < NUM_TOGGLES)
+  		    {
+  		        toggles[t].check(toggles[t], x, y)
+  		        t + 1
+  		    }
+  		    
+  		}
+	}
+	
+    clear(get_blend(WHITE, BLACK, 200))
+    
+	t = 0
+  	while(t < NUM_TOGGLES)
+  	{
+  	    if toggles[t].on {toggles[t].text = "ON"}
+  	    else {toggles[t].text = "OFF"}
+  	    
+  	    toggles[t].draw(toggles[t], x, y)
+  	    t + 1
+  	}
+	
+
+    frame()
+	
+
+}

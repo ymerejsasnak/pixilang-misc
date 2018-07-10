@@ -1,0 +1,63 @@
+//add set colors, etc
+
+
+fn create_toggle($x, $y, $xsize, $ysize, $text)
+{
+
+	$this = new()
+	
+	$this.text = $text
+	$this.x = $x
+	$this.y = $y
+	$this.xsize = $xsize
+	$this.ysize = $ysize
+	$this.on = 0
+	
+	
+	fn _draw_toggle($this)
+	{
+	    if ($this.on)
+	    {
+		    fbox($this.x, $this.y, $this.xsize, $this.ysize, WHITE)
+		    box($this.x, $this.y, $this.xsize, $this.ysize, BLACK)
+		    print($this.text, $this.x + $this.xsize / 2, 
+		          $this.y + $this.ysize / 2, BLACK)
+		}
+		else
+		{
+		    fbox($this.x, $this.y, $this.xsize, $this.ysize, BLACK)
+		    box($this.x, $this.y, $this.xsize, $this.ysize, WHITE)
+		    print($this.text, $this.x + $this.xsize / 2,
+		          $this.y + $this.ysize / 2, WHITE)		
+		}
+	}	
+
+	
+	fn _toggle($this)
+	{
+	   $this.on = abs($this.on - 1)
+	}
+	
+
+	fn _check($this, $x, $y)
+    {
+        if $x > $this.x && $x < $this.x + $this.xsize &&
+           $y > $this.y && $y < $this.y + $this.ysize
+        {
+           $this.toggle($this)
+           
+        }
+        
+	}
+
+	
+	$this.draw = _draw_toggle
+    $this.toggle = _toggle
+    $this.check = _check
+    
+    
+	ret ($this)
+}
+
+
+
