@@ -1,0 +1,60 @@
+tick_size = 1024
+tick_cnt = 0
+tick_num = 0
+
+
+
+fn audio_callback(
+    $stream, 
+    $userdata, 
+    $channels, 
+    $frames, 
+    $output_time_in_system_ticks, 
+    $in_channels, 
+    $latency_in_frames )
+{
+	
+    if (get_size($channels) == 2)
+    {   
+        $datacopy = new(get_xsize($userdata), get_ysize($userdata), get_type($userdata))
+        copy($datacopy, $userdata)
+    }
+
+    $p = 0
+    while( $p < $frames )
+    {
+	$size = $frames - $p;
+	if $size > tick_size - tick_cnt { $size = tick_size - tick_cnt }
+
+
+    
+	$userdata[ SMP_DEST ] = $channels[0];
+	$userdata[ SMP_DEST_OFF ] = $p;
+	$userdata[ SMP_DEST_LEN ] = $size;
+    sampler( $userdata )
+    
+    if (get_size($channels) == 2)
+    {
+    $datacopy[ SMP_DEST ] = $channels[1];
+	$datacopy[ SMP_DEST_OFF ] = $p;
+	$datacopy[ SMP_DEST_LEN ] = $size;
+    sampler( $datacopy )
+    }
+        
+        $p + $size
+        tick_cnt + $size
+        if tick_cnt >= tick_size
+        {
+    	    
+    	    tick_num + 1
+    	    tick_cnt = 0
+        }
+    }
+    
+   
+    ret( 1 )
+}
+ 
+
+
+

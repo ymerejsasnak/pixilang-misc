@@ -1,0 +1,74 @@
+include "sampleload.pixi"
+
+fn create_wave_window($data, $x, $y, $xsize, $ysize)
+{
+    $this = new()
+    
+    $this.data = $data
+    $this.x = $x
+    $this.y = $y
+    $this.xsize = $xsize
+    $this.ysize = $ysize
+    
+    $this.sample_info = load_sample($data)
+    
+    //printnum(get_size($this.sample_info), -150, 0)
+   // frame(900)
+    
+    $this.plotmax = new($xsize)
+    $this.plotmin = new($xsize)
+                
+    $i = 0
+    $step = get_size($data) / $xsize
+    while ($i < $xsize)
+    {
+       // $s = scale($i, 0, $xsize, 0, get_size($data))
+        $max = $data[$i * $step]
+        $min = $data[$i * $step]
+        
+        $j = 1
+        while ($j < $step)
+        {
+            if $data[$i * $step + $j] > $max
+                {$max = $data[$i * $step + $j]}
+            
+            if $data[$i * $step + $j] < $min
+                {$min = $data[$i * $step + $j]}
+                
+            $j + 1
+        }
+        
+        $this.plotmax[$i] = $max       
+        $this.plotmin[$i] = $min
+        
+        $i + 1
+    }
+ 
+    
+    fn _draw_wave($this)
+    {
+        fbox($this.x, $this.y, $this.xsize, $this.ysize, BLACK)
+        $midline = $this.y + $this.ysize / 2
+        $i = 0
+        while ($i < $this.xsize)
+        {
+            $ampmax = scale($this.plotmax[$i], -(1<<15), (1<<15), -$this.ysize/2, $this.ysize/2)
+            $ampmin = scale($this.plotmin[$i], -(1<<15), (1<<15), -$this.ysize/2, $this.ysize/2)
+            line($i + $this.x, $midline + $ampmax, $i + $this.x, $midline + $ampmin, GREEN)
+            $i + 1
+        }
+        box($this.x, $this.y, $this.xsize, $this.ysize, WHITE)
+        line($this.x, $midline, $this.x + $this.xsize, $midline, WHITE)
+        
+        $pos = scale($this.sample_info[ SMP_SRC_OFF_H ], 0, get_size($this.data), $this.x, $this.x + $this.xsize)
+        line($pos, $this.y, $pos, $this.y + $this.ysize, RED)
+    }   
+    
+    
+    
+    
+    $this.draw = _draw_wave
+    
+    
+    ret ($this)
+}

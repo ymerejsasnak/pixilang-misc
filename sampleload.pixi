@@ -1,0 +1,16 @@
+fn load_sample($wav)
+{
+	$sample_info = new( SMP_INFO_SIZE, 1, INT32 )
+	clean( $sample_info )
+	$sample_info[ SMP_SRC ] = $wav
+	$sample_info[ SMP_SRC_OFF_H ] = 0
+	$sample_info[ SMP_SRC_OFF_L ] = 0
+	$sample_info[ SMP_LOOP ] = 0
+	$sample_info[ SMP_LOOP_LEN ] = get_size( $wav )
+	$sample_info[ SMP_VOL1 ] = 32768 / 2
+	$sample_info[ SMP_VOL2 ] = 32768 / 2
+	$sample_info[ SMP_DELTA ] = ( 1 << 16 )
+	$sample_info[ SMP_FLAGS ] = SMP_FLAG_INTERP4
+	
+	ret($sample_info)
+}

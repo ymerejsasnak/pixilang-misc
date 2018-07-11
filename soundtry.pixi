@@ -1,0 +1,62 @@
+include "sampleload.pixi"
+include "audiocallback.pixi"
+
+
+//amu=mutex_create()
+
+//set_pixel_size( WINDOW_XSIZE / 480 )
+resize( get_screen(), WINDOW_XSIZE, WINDOW_YSIZE )
+
+
+file = file_dialog( "Select some file", "wav", "fff" )
+if file < 0 {halt}
+
+
+wav = load(file)
+
+
+sample = load_sample(wav) //fn from sampleload.pixi
+
+
+
+set_audio_callback( audio_callback, sample, wav.sample_rate, get_type( wav ), wav.channels ,AUDIO_FLAG_INTERP2 )
+
+
+rate = 1
+
+while(1)
+{
+  clear()
+  print( file, 0, -50 )
+  
+  h = sample[ SMP_SRC_OFF_H ]
+  l = sample[ SMP_SRC_OFF_L ]
+  xpos = h / get_size( wav ) * WINDOW_XSIZE - WINDOW_XSIZE/2
+  line(xpos,-400,xpos,400)
+        
+	frame()
+	
+	
+
+	while get_event() 
+  { 
+  	if EVT[ EVT_TYPE ] == EVT_QUIT { halt } 
+        
+  	if EVT[EVT_TYPE] == EVT_MOUSEBUTTONDOWN ||
+  	EVT[EVT_TYPE] == EVT_MOUSEMOVE 
+  	
+  	{
+  	}
+  
+  }
+  
+  
+  
+   sample[SMP_DELTA] = (sample[SMP_DELTA] + rate * (1 << 16)) / 2
+        
+   if rand() > (1<<14)
+   {rate * 1.05}     
+   else
+   {rate / 1.05}       
+ 
+}

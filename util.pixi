@@ -1,0 +1,42 @@
+fn randint($min, $max)
+{
+    if $max == 0 { $max = $min    $min = 0 }
+    ret ( floor ( (rand() / 32767) * ($max - $min) + $min ) )
+}
+
+
+
+fn randfloat($min, $max)
+{
+    ret ( (rand() / 32767) * ($max - $min) + $min )
+}
+
+
+fn scale($value, $inmin, $inmax, $outmin, $outmax)
+{
+	ret ( ($inmax * $outmin - $inmin * $outmax) / ($inmax - $inmin) + $value * ( ($outmax - $outmin) / ($inmax - $inmin) ) )
+
+}
+
+
+fn printnum($n, $x, $y)
+{
+    $s = ""
+    num2str($s, $n)
+    print($s, $x, $y)
+    
+}
+
+
+
+
+//?? trying to get some kind of for loop functionality
+fn for($start, $stop, $step, $func)
+{
+    while($start < $stop)
+    {
+        $func()
+        $start + $step
+    }
+}
+

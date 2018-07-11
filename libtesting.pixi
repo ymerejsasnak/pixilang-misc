@@ -1,4 +1,7 @@
 include "toggle.pixi"
+include "wave_window.pixi"
+include "util.pixi" // needed by wave_window
+include "audiocallback.pixi"
 
 
 resize( get_screen(), WINDOW_XSIZE, WINDOW_YSIZE )
@@ -9,7 +12,7 @@ ymax = WINDOW_YSIZE / 2
  
  
  
-NUM_TOGGLES = 6
+NUM_TOGGLES = 4
 t = 0
 toggles = new(NUM_TOGGLES)
 
@@ -21,6 +24,17 @@ while (t < NUM_TOGGLES)
 
 
 
+wav = load("demo3.wav")
+wav2 = load("demo1.wav")
+//printnum(wav2, 0, 0)
+
+w = create_wave_window(wav, 0, -100, 150, 100)
+w2 = create_wave_window(wav2, 0, 50, 150, 100)
+
+
+
+
+
 while(1)
 {
 	while get_event() 
@@ -29,6 +43,9 @@ while(1)
   		
   		if EVT[ EVT_TYPE ] == EVT_MOUSEBUTTONDOWN
   		{
+  		    set_audio_callback( audio_callback, w2.sample_info, wav2.sample_rate, get_type( wav2 ), wav2.channels ,AUDIO_FLAG_INTERP2 )
+  		    
+  		    
   		    x = EVT[ EVT_X ]
   		    y = EVT[ EVT_Y ]
   		    
@@ -40,6 +57,9 @@ while(1)
   		    }
   		    
   		}
+  		
+  		if EVT[ EVT_TYPE ] == EVT_MOUSEBUTTONUP
+  		{  set_audio_callback(-1)}
 	}
 	
     clear(get_blend(WHITE, BLACK, 200))
@@ -50,9 +70,12 @@ while(1)
   	    if toggles[t].on {toggles[t].text = "ON"}
   	    else {toggles[t].text = "OFF"}
   	    
-  	    toggles[t].draw(toggles[t], x, y)
+  	    toggles[t].draw(toggles[t])
   	    t + 1
   	}
+  	
+ 	w.draw(w)
+    w2.draw(w2)
 	
 
     frame()

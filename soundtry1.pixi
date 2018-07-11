@@ -1,0 +1,145 @@
+include "sampleload.pixi"
+include "audiocallback.pixi"
+
+
+amu=mutex_create()
+
+//set_pixel_size( WINDOW_XSIZE / 480 )
+resize( get_screen(), WINDOW_XSIZE, WINDOW_YSIZE )
+
+
+file = file_dialog( "Select some file", "wav", "fff" )
+if file < 0 {halt}
+
+
+wav = load(file)
+
+
+sample = load_sample(wav) //fn from sampleload.pixi
+
+
+f = new_filter()
+filter_a = new( 3, 1, FLOAT32 ) //feedforward filter coefficients
+filter_b = new( 2, 1, FLOAT32 ) //feedback filter coefficients
+
+
+set_audio_callback( audio_callback, sample, 48000, get_type( wav ),1,AUDIO_FLAG_INTERP2 )
+
+
+tap = 0
+x = 0
+lastx = 0
+xstr=""
+
+r=0
+slow=0
+target_rate = (1<<16)
+
+change = 1000
+
+while(1)
+{
+  clear()
+  print( file, 0, -50 )
+  print(r,0,0)
+  print(d,0,10)
+  
+  h = sample[ SMP_SRC_OFF_H ]
+  l = sample[ SMP_SRC_OFF_L ]
+  xpos = h / get_size( wav ) * WINDOW_XSIZE - WINDOW_XSIZE/2
+  line(xpos,-400,xpos,400)
+        
+	frame()
+
+	while get_event() 
+  { 
+  	if EVT[ EVT_TYPE ] == EVT_QUIT { halt } 
+        
+  	if EVT[EVT_TYPE] == EVT_MOUSEBUTTONDOWN ||
+  	EVT[EVT_TYPE] == EVT_MOUSEMOVE 
+  	
+  	{
+  	    tap = 1
+  	   // lastx = x
+  	    // t = EVT[EVT_TIME]
+        x = EVT[EVT_X]
+        
+   
+        if x < 0 { sample[ SMP_FLAGS ] = SMP_FLAG_INTERP4 | SMP_FLAG_REVERSE }
+        else {sample[ SMP_FLAGS ] = SMP_FLAG_INTERP4}
+        
+       
+         
+        dist = abs(x) 
+        d=""
+        num2str(d,dist)
+        
+        
+        
+      //  target_rate = (dist + 100) * 200
+      
+       
+       
+       
+        //if x != lastx {sample[SMP_DELTA] = abs(x - lastx) / WINDOW_XSIZE * (1<<24)}
+        //else {sample[SMP_DELTA] = 0}
+    
+        
+    
+  
+    }
+        
+        
+   if EVT[EVT_TYPE] == EVT_MOUSEBUTTONUP {tap=0}
+      //  {//sample[ SMP_FLAGS ] = SMP_FLAG_INTERP4
+        //target_rate = 0
+        //sample[SMP_DELTA] = 0
+      //  }
+        
+        
+     //curr_rate =sample[SMP_DELTA]
+        
+      //  factor = 40
+    //   sample[SMP_DELTA] = (curr_rate * ( factor - 1 ) + target_rate) / factor
+    
+  }
+  mutex_lock(amu)
+  if tap{
+      if dist < WINDOW_XSIZE / 4
+            {sample[SMP_DELTA] - change}
+        else
+            {sample[SMP_DELTA] + change}
+  
+     }
+     if sample[SMP_DELTA] < (1<<15){sample[SMP_DELTA] = (1<<15)}
+      if sample[SMP_DELTA] > (1<<17){sample[SMP_DELTA] = (1<<17)}
+      mutex_unlock(amu)
+}
+
+
+
+
+fn set_filter_parameters( $q, $freq )
+{
+    $omega = 2 * M_PI * $freq / sample_rate
+    $tsin = sin( $omega )
+    $tcos = cos( $omega )
+    $alpha = $tsin / ( 2 * $q )
+    
+	//Low-pass:
+	$b0 = ( 1 - $tcos ) / 2
+	$b1 = 1 - $tcos
+	$b2 = ( 1 - $tcos ) / 2
+	$a0 = 1 + $alpha
+	$a1 = -2 * $tcos
+	$a2 = 1 - $alpha
+    
+    
+    
+    filter_a[ 0 ] = $b0 / $a0
+    filter_a[ 1 ] = $b1 / $a0
+    filter_a[ 2 ] = $b2 / $a0
+    filter_b[ 0 ] = -$a1 / $a0
+    filter_b[ 1 ] = -$a2 / $a0
+    init_filter( f, filter_a, filter_b )
+}
