@@ -1,0 +1,74 @@
+//also add reset option for 'sticky' slider (ie like a pitch bend or something)
+
+fn create_slider($x, $y, $xsize, $ysize, $text)
+{
+    $this = new()
+    
+    $this.x = $x
+    $this.y = $y
+    $this.xsize = $xsize
+    $this.ysize = $ysize
+    $this.vert = 1
+    
+    $this.touched = 0
+    
+    $this.pos = .5
+    
+    if $xsize > $ysize
+    {
+        $this.vert = 0
+    }
+    
+    $this.draw = 
+    {
+        $this = $1
+        
+        
+        if $this.vert
+        {
+            $pos = scale($this.pos, 0, 1, $this.y + $this.ysize, $this.y)
+            
+            fbox($this.x + $this.xsize / 2 - 2, $this.y, 4, $this.ysize, BLACK)
+            box($this.x + $this.xsize / 2 - 2, $this.y, 4, $this.ysize, WHITE)
+            
+            fbox($this.x, $pos - 10 , $this.xsize, 20, BLACK)
+            box($this.x, $pos - 10 , $this.xsize, 20, WHITE)
+        }
+        
+    }
+    
+    $this.touch =
+    {
+        $this = $1
+        $x = $2
+        $y = $3
+        
+        if $x > $this.x && $x < $this.x + $this.xsize &&
+           $y > $this.y && $y < $this.y + $this.ysize
+        {
+            $this.touched = 1
+        }
+        else
+        {
+            $this.touched = 0
+        }
+      
+    }
+    
+    
+    $this.move =
+    {
+        $this = $1
+        $x = $2
+        $y = $3
+    
+        if $this.touched
+        {
+            $this.pos = scale($y, $this.y, $this.y + $this.ysize, 1, 0)
+            if $this.pos > 1 { $this.pos = 1 }
+            if $this.pos < 0 { $this.pos = 0 }
+        }
+    }
+    
+    ret ($this)
+}

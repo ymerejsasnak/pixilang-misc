@@ -1,7 +1,8 @@
 //add set colors, etc
 
+// work on distinction between function as toggle and as just button (and rename as button?)
 
-fn create_toggle($x, $y, $xsize, $ysize, $text)
+fn create_toggle($x, $y, $xsize, $ysize, $text, $func, $obj)
 {
 
 	$this = new()
@@ -12,10 +13,14 @@ fn create_toggle($x, $y, $xsize, $ysize, $text)
 	$this.xsize = $xsize
 	$this.ysize = $ysize
 	$this.on = 0
+	$this.func = $func
+	$this.obj = $obj
 	
 	
-	fn _draw_toggle($this)
+	$this.draw =
 	{
+	    $this = $1
+	    
 	    if ($this.on)
 	    {
 		    fbox($this.x, $this.y, $this.xsize, $this.ysize, WHITE)
@@ -31,30 +36,51 @@ fn create_toggle($x, $y, $xsize, $ysize, $text)
 		          $this.y + $this.ysize / 2, WHITE)		
 		}
 	}	
-
 	
-	fn _toggle($this)
-	{
-	   $this.on = abs($this.on - 1)
-	}
 	
-
-	fn _check($this, $x, $y)
+	$this.touch = 
     {
+        $this = $1
+        $x = $2
+        $y = $3
+        
         if $x > $this.x && $x < $this.x + $this.xsize &&
            $y > $this.y && $y < $this.y + $this.ysize
         {
            $this.toggle($this)
-           
         }
         
-	}
-
+	}   
 	
-	$this.draw = _draw_toggle
-    $this.toggle = _toggle
-    $this.check = _check
-    
+
+	$this.toggle =	
+	{ 
+	    $this = $1
+	   
+	    $this.on = abs($this.on - 1)
+	    
+	    $this.func($this.on, $this.obj)
+	}
+	
+	$this.turnon =
+	{
+	    $this = $1
+	
+	    $this.on = 1
+	    
+	    $this.func($this.on, $this.obj)
+	}
+	
+	$this.turnoff = 
+	{
+	    $this = $1
+	
+	    $this.on = 0
+	    
+	    $this.func($this.on, $this.obj)
+	}
+	
+
     
 	ret ($this)
 }

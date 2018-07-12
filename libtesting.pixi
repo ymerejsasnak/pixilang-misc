@@ -1,6 +1,7 @@
 include "toggle.pixi"
+include "slider.pixi"
 include "wave_window.pixi"
-include "util.pixi" // needed by wave_window
+include "util.pixi" // needed by wave_window and slider
 include "audiocallback.pixi"
 
 
@@ -12,28 +13,23 @@ ymax = WINDOW_YSIZE / 2
  
  
  
-NUM_TOGGLES = 4
-t = 0
-toggles = new(NUM_TOGGLES)
-
-while (t < NUM_TOGGLES)
-{
-    toggles[t] = create_toggle(xmin + 10, ymin + 55 * t + t + 10, 100, 50, "")
-    t + 1
-}
+    
 
 
 
-wav = load("demo3.wav")
+wav = load("demo1.wav")
 wav2 = load("demo1.wav")
-//printnum(wav2, 0, 0)
 
-w = create_wave_window(wav, 0, -100, 150, 100)
-w2 = create_wave_window(wav2, 0, 50, 150, 100)
-
+w = create_wave_window(wav, -50, -200, 150, 100)
+w2 = create_wave_window(wav2, 0, -100, 150, 100)
 
 
 
+t = create_toggle(xmin, ymin, 200, 100, "1", tw, w)
+t2 = create_toggle(xmin, ymin + 150, 200, 100, "2", tw, w2)
+
+
+s = create_slider(100, 0, 50, 200)
 
 while(1)
 {
@@ -43,42 +39,67 @@ while(1)
   		
   		if EVT[ EVT_TYPE ] == EVT_MOUSEBUTTONDOWN
   		{
-  		    set_audio_callback( audio_callback, w2.sample_info, wav2.sample_rate, get_type( wav2 ), wav2.channels ,AUDIO_FLAG_INTERP2 )
+  		    
   		    
   		    
   		    x = EVT[ EVT_X ]
   		    y = EVT[ EVT_Y ]
   		    
-  		    t = 0
-  		    while(t < NUM_TOGGLES)
-  		    {
-  		        toggles[t].check(toggles[t], x, y)
-  		        t + 1
-  		    }
+  		    s.touch(s, x, y)
+  		    t.touch(t, x, y)
+  		    t2.touch(t2, x, y)
   		    
   		}
   		
-  		if EVT[ EVT_TYPE ] == EVT_MOUSEBUTTONUP
-  		{  set_audio_callback(-1)}
+  		if EVT [EVT_TYPE] == EVT_MOUSEMOVE
+  		{
+  		
+  		    x = EVT[ EVT_X ]
+  		    y = EVT[ EVT_Y ]
+  		    s.move(s, x, y)
+  		}
+  		
+  		if EVT [EVT_TYPE] == EVT_MOUSEBUTTONUP
+  		{
+  		    s.touch(s)
+  		    
+  		    t.turnoff(t)
+  		    t2.turnoff(t2)
+  		}
+  		
 	}
 	
     clear(get_blend(WHITE, BLACK, 200))
     
-	t = 0
-  	while(t < NUM_TOGGLES)
-  	{
-  	    if toggles[t].on {toggles[t].text = "ON"}
-  	    else {toggles[t].text = "OFF"}
+	
   	    
-  	    toggles[t].draw(toggles[t])
-  	    t + 1
-  	}
+  		    t.xsize = (s.pos + 0.5) * 100
+  	t.draw(t)
+  	t2.draw(t2)
   	
+     //
+    
+    //
+     	
  	w.draw(w)
     w2.draw(w2)
+    
+    
+    s.draw(s)
 	
 
     frame()
 	
 
+}
+
+
+fn tw($on, $this)
+{
+    if $on
+  	{
+  	//set_audio_callback(audio_callback, w.sample_info + w2.sample_info, 44100, INT32, 2, AUDIO_FLAG_INTERP2)
+  	set_audio_callback( audio_callback, $this.sample_info, get_prop( $this.data, "sample_rate"), get_type( $this.data ), get_prop($this.data, "channels") ,AUDIO_FLAG_INTERP2 )
+  	}
+    else {set_audio_callback(-1)}
 }

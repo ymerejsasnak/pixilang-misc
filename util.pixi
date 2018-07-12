@@ -1,42 +1,97 @@
-fn randint($min, $max)
+// generate random integer
+// 0, 1, or 2 params: 
+// if 0, randomly returns either a 1 or 0
+// if 1, returns random int in range [0, value)
+// if 2, returns a random int in range [value1, value2)
+fn randint()
 {
-    if $max == 0 { $max = $min    $min = 0 }
-    ret ( floor ( (rand() / 32767) * ($max - $min) + $min ) )
+    $min = $1
+    $max = $2
+    
+    if $1 == 0
+    {
+        $min = 0
+        $max = 2  // ie, return only 0 or 1
+    }
+    if $1 != 0 && $2 == 0
+    {
+        $min = 0
+        $max = $1
+    }    
+
+    ret ( floor ( (rand() / 32768) * ($max - $min) + $min ) )
+}
+
+
+// generate random float
+// 0, 1, or 2 params:
+// if 0, randomly returns a float in range [0, 1)
+// if 1, returns a random float in range [0, value)
+// if 2, returns a random float in range [value1, value2)
+fn randfloat()
+{
+    $min = $1
+    $max = $2
+    
+    if $1 == 0
+    {
+        $min = 0
+        $max = 1
+    }
+    if $1 != 0 && $2 == 0
+    {
+        $min = 0
+        $max = $1
+    }    
+    
+    ret ( (rand() / 32768) * ($max - $min) + $min )
 }
 
 
 
-fn randfloat($min, $max)
-{
-    ret ( (rand() / 32767) * ($max - $min) + $min )
-}
-
+// scale a value from an old range to a new range
+// params:
+// $value - the input value
+// $inmin, $inmax - old range [min, max] 
+// $outmin, $outmax - new range [min, max]
 
 fn scale($value, $inmin, $inmax, $outmin, $outmax)
 {
-	ret ( ($inmax * $outmin - $inmin * $outmax) / ($inmax - $inmin) + $value * ( ($outmax - $outmin) / ($inmax - $inmin) ) )
-
+	ret ( ($value - $inmin) / ($inmax - $inmin) * ($outmax - $outmin) + $outmin )
 }
 
 
+// simple helper to more quickly print numbers to screen
+// params:
+// $n - value
+// $x - x position
+// $y - y position
 fn printnum($n, $x, $y)
 {
     $s = ""
     num2str($s, $n)
-    print($s, $x, $y)
-    
+    print($s, $x, $y)  
 }
 
 
-
-
-//?? trying to get some kind of for loop functionality
+//
 fn for($start, $stop, $step, $func)
 {
-    while($start < $stop)
+    $i = $start
+    while($i < $stop)
     {
-        $func()
-        $start + $step
+        $func($i)
+        $i + $step
     }
 }
 
+
+fn repeat($times, $func)
+{
+    $i = 0
+    while($i < $times)
+    {
+        $func($i)
+        $i + 1
+    }
+}

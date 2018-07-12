@@ -38,25 +38,25 @@ fn create_wave_window($data, $x, $y, $xsize, $ysize)
             $j + 1
         }
         
-        $this.plotmax[$i] = $max       
-        $this.plotmin[$i] = $min
+        $this.plotmax[$i] = scale($max, -(1<<15), (1<<15), -$this.ysize/2, $this.ysize/2)       
+        $this.plotmin[$i] = scale($min, -(1<<15), (1<<15), -$this.ysize/2, $this.ysize/2)
         
         $i + 1
     }
  
-    
     fn _draw_wave($this)
     {
+    
         fbox($this.x, $this.y, $this.xsize, $this.ysize, BLACK)
         $midline = $this.y + $this.ysize / 2
+        
         $i = 0
         while ($i < $this.xsize)
         {
-            $ampmax = scale($this.plotmax[$i], -(1<<15), (1<<15), -$this.ysize/2, $this.ysize/2)
-            $ampmin = scale($this.plotmin[$i], -(1<<15), (1<<15), -$this.ysize/2, $this.ysize/2)
-            line($i + $this.x, $midline + $ampmax, $i + $this.x, $midline + $ampmin, GREEN)
+            line($i + $this.x, $midline + $this.plotmax[$i], $i + $this.x, $midline + $this.plotmin[$i], GREEN)
             $i + 1
         }
+        
         box($this.x, $this.y, $this.xsize, $this.ysize, WHITE)
         line($this.x, $midline, $this.x + $this.xsize, $midline, WHITE)
         

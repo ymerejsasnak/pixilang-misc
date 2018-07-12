@@ -1,0 +1,37 @@
+include "util.pixi"
+rand_seed(get_ticks())
+
+
+resize( get_screen(), WINDOW_XSIZE, WINDOW_YSIZE )
+
+x = randint(100, 1000)
+y = randfloat(0, 1)
+
+
+//for(0, 100, 10, {printnum(x + $1, $1, $1)})
+printnum(x, 0, -50)
+//for(0, 250, 25, {printnum($1, -$1, -$1)})
+
+
+//repeat(20, {printnum(randint(10), randint(-500, 500), randint(-300, 300))})
+
+frame()
+
+while(1)
+{
+    while get_event()
+    {
+        if EVT[ EVT_TYPE ] == EVT_QUIT { halt } 
+        if EVT[ EVT_TYPE ] == EVT_MOUSEBUTTONDOWN
+        {
+            clear()
+            x = randint()
+            printnum(x, 0, -50)
+            printnum(scale(x, 0, 1000, 100, 200), 0, -100)
+            frame()
+        }
+     }
+    
+    //frame()
+
+}
