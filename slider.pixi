@@ -1,5 +1,6 @@
 //also add reset option for 'sticky' slider (ie like a pitch bend or something)
 
+
 fn create_slider($x, $y, $xsize, $ysize)
 {
     $this = new()
@@ -8,6 +9,8 @@ fn create_slider($x, $y, $xsize, $ysize)
     $this.y = $y
     $this.xsize = $xsize
     $this.ysize = $ysize
+    $this.sticky = 0
+    
     $this.vert = 1
     
     $this.grab = 0
@@ -42,20 +45,28 @@ fn create_slider($x, $y, $xsize, $ysize)
         $this = $1
         $touch_state = $2
         
+        
+        
         if $touch_state.down
         {
+            $pos = scale($this.pos, 0, 1, $this.y + $this.ysize, $this.y)
+            
             if $touch_state.x > $this.x && $touch_state.x < $this.x + $this.xsize &&
-               $touch_state.y > $this.y && $touch_state.y < $this.y + $this.ysize
+               $touch_state.y > $pos - 10 && $touch_state.y < $pos + 10
             {
                 $this.grab = 1
             }
-        }
+        }       
         
-        if $touch_state.up //NOT ALWAYS HITTING THIS!  WHY?!?!?!?!?!
+        if $touch_state.up  //NOT ALWAYS HITTING THIS!  WHY?!?!?!?!?!
         {
             $this.grab = 0
-            clear(RED)
+            if $this.sticky
+            {
+                $this.pos = .5
+            }
         }
+        
         
         if $this.grab
         {
@@ -64,7 +75,6 @@ fn create_slider($x, $y, $xsize, $ysize)
             if $this.pos > 1 { $this.pos = 1 }
             if $this.pos < 0 { $this.pos = 0 }
         }
-        
             
     }
     

@@ -1,15 +1,19 @@
 include "button.pixi"
 include "slider.pixi"
 include "wave_window.pixi"
-include "util.pixi" // needed by wave_window and slider
 include "audiocallback.pixi"
 
+include "util.pixi" // needed by wave_window and slider
 
-resize( get_screen(), WINDOW_XSIZE, WINDOW_YSIZE )
-xmin = -WINDOW_XSIZE / 2
-xmax = WINDOW_XSIZE / 2
-ymin = -WINDOW_YSIZE / 2
-ymax = WINDOW_YSIZE / 2
+
+
+scr = get_screen()
+
+resize( scr, 800, 600 )
+xmin = -get_xsize(scr) / 2
+xmax = get_xsize(scr) / 2
+ymin = -get_ysize(scr) / 2
+ymax = get_ysize(scr) / 2
  
  
  
@@ -58,8 +62,11 @@ while(1)
   		
 	}
 	
+    clear(get_blend(WHITE, BLACK, 200))
+    
+    
 	
-	//clear(get_blend(WHITE, BLACK, 200))
+	
 	
 	
 	button1.update(button1, touch_state)
@@ -76,8 +83,7 @@ while(1)
   	     	
  	w.draw(w)
     
-    s.draw(s)
-	
+	s.draw(s)
 	
 	printnum(touch_state.down, 300, 200)  
 	printnum(touch_state.up, 300, 220)

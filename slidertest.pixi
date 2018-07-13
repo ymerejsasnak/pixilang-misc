@@ -1,0 +1,58 @@
+
+include "slider.pixi"
+
+include "util.pixi" // needed by wave_window and slider
+
+
+
+scr = get_screen()
+
+resize( scr, 800, 600 )
+xmin = -get_xsize(scr) / 2
+xmax = get_xsize(scr) / 2
+ymin = -get_ysize(scr) / 2
+ymax = get_ysize(scr) / 2
+
+
+s = create_slider(0, 0, 50, 200)
+
+s.sticky = 1
+
+touch_state = new()
+
+while(1)
+{
+    touch_state.down = 0
+    touch_state.up = 0
+    touch_state.move = 0
+    
+	while get_event() 
+ 	{ 
+  		if EVT[ EVT_TYPE ] == EVT_QUIT { halt } 
+  		
+  		touch_state.up = ( EVT[EVT_TYPE] == EVT_MOUSEBUTTONUP )
+  		touch_state.move = ( EVT[EVT_TYPE] == EVT_MOUSEMOVE )
+  		touch_state.down = ( EVT[EVT_TYPE] == EVT_MOUSEBUTTONDOWN )
+  		
+  	  		
+  	    touch_state.x = EVT[ EVT_X ]
+  		touch_state.y = EVT[ EVT_Y ]
+  	
+	}
+	
+	
+	clear(get_blend(WHITE, BLACK, 255 - 255 * s.pos))
+	
+	
+	
+    s.update(s, touch_state)
+  
+    
+    s.draw(s)
+	
+	  
+    
+    frame()
+	
+
+}

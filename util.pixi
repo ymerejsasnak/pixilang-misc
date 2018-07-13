@@ -95,3 +95,15 @@ fn repeat($times, $func)
         $i + 1
     }
 }
+
+fn min($x, $y)
+{
+    if $x < $y { ret ($x) }
+    else { ret ($y) }
+}
+
+fn max($x, $y)
+{
+    if $x < $y { ret ($x) }
+    else { ret ($y) }
+}

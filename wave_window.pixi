@@ -1,5 +1,6 @@
 include "sampleload.pixi"
 
+
 fn create_wave_window($data, $x, $y, $xsize, $ysize)
 {
     $this = new()

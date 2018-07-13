@@ -1,0 +1,120 @@
+set_pixel_size( WINDOW_XSIZE / 480 )
+resize( get_screen(), WINDOW_XSIZE, WINDOW_YSIZE )
+
+
+wav = load("demo1.wav")
+
+
+sample1 = load_sample(wav)
+sample2 = load_sample(wav)
+
+
+sample2[SMP_FLAGS] = SMP_FLAG_INTERP4 | SMP_FLAG_REVERSE
+
+set_audio_callback( audio_callback, 0, wav.sample_rate, get_type( wav ), 2 ,AUDIO_FLAG_INTERP2 )
+
+
+while(1)
+{
+    print("running", 0, 0)
+    //clear()      
+	//frame()
+		
+
+	while get_event() 
+    { 
+  	    if EVT[ EVT_TYPE ] == EVT_QUIT { halt } 
+  	    
+  	    
+    }
+  
+}
+
+
+
+
+
+
+fn load_sample($wav)
+{
+	$sample_info = new( SMP_INFO_SIZE, 1, INT32 )
+	clean( $sample_info )
+	$sample_info[ SMP_SRC ] = $wav
+	$sample_info[ SMP_SRC_OFF_H ] = 0
+	$sample_info[ SMP_SRC_OFF_L ] = 0
+	$sample_info[ SMP_LOOP ] = 0
+	$sample_info[ SMP_LOOP_LEN ] = get_size( $wav )
+	$sample_info[ SMP_VOL1 ] = 32768 / 2
+	$sample_info[ SMP_VOL2 ] = 32768 / 2
+	$sample_info[ SMP_DELTA ] = ( 1 << 16 )
+	$sample_info[ SMP_FLAGS ] = SMP_FLAG_INTERP4
+	
+	ret($sample_info)
+}
+
+
+
+
+fn audio_callback(
+    $stream, 
+    $userdata, 
+    $channels, 
+    $frames, 
+    $output_time_in_system_ticks, 
+    $in_channels, 
+    $latency_in_frames )
+{
+
+    tick_size = 1024
+    tick_cnt = 0
+    tick_num = 0
+	
+   // if (get_size($channels) == 2)
+    //{   
+     //   $datacopy = new(get_xsize($), get_ysize($userdata), get_type($userdata))
+      //  copy($datacopy, $userdata)
+    //}
+
+    $p = 0
+    while( $p < $frames )
+    {
+	$size = $frames - $p;
+	if $size > tick_size - tick_cnt { $size = tick_size - tick_cnt }
+
+
+    
+	sample1[ SMP_DEST ] = $channels[0];
+	sample1[ SMP_DEST_OFF ] = $p;
+	sample1[ SMP_DEST_LEN ] = $size;
+    sampler( sample1 )
+    
+    sample2[ SMP_DEST ] = $channels[1];
+	sample2[ SMP_DEST_OFF ] = $p;
+	sample2[ SMP_DEST_LEN ] = $size;
+    sampler( sample2 )
+   
+   
+   
+   // if (get_size($channels) == 2)
+    //{
+    //$datacopy[ SMP_DEST ] = $channels[1];
+	//$datacopy[ SMP_DEST_OFF ] = $p;
+	//$datacopy[ SMP_DEST_LEN ] = $size;
+    //sampler( $datacopy )
+    //}
+        
+        $p + $size
+        tick_cnt + $size
+        if tick_cnt >= tick_size
+        {
+    	    
+    	    tick_num + 1
+    	    tick_cnt = 0
+        }
+    }
+    ret( 1 )
+}
+ 
+
+
+

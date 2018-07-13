@@ -1,0 +1,72 @@
+//also add reset option for 'sticky' pad, maybe recordable path too?
+
+fn create_xypad($x, $y, $xsize, $ysize)
+{
+    $this = new()
+    
+    $this.x = $x
+    $this.y = $y
+    $this.xsize = $xsize
+    $this.ysize = $ysize
+    
+    $this.grab = 0
+    
+    $this.posx = .5
+    $this.posy = .5
+    
+    
+    $this.draw = 
+    {
+        $this = $1
+        
+        $posx = scale($this.posx, 0, 1, $this.x, $this.x + $this.xsize)
+        $posy = scale($this.posy, 0, 1, $this.y + $this.ysize, $this.y)
+         
+         
+        fbox($this.x, $this.y, $this.xsize, $this.ysize, BLACK)
+        box($this.x, $this.y, $this.xsize, $this.ysize, WHITE)
+         
+        line($this.x, $posy, $this.x + $this.xsize, $posy, WHITE)
+        line($posx, $this.y, $posx, $this.y + $this.ysize, WHITE)
+        
+        fbox($posx - 4, $posy - 4, 9, 9, WHITE)
+        
+    }
+    
+    $this.update =
+    {
+        $this = $1
+        $touch_state = $2
+        
+
+        if $touch_state.down
+        {
+            if $touch_state.x > $this.x && $touch_state.x < $this.x + $this.xsize &&
+               $touch_state.y > $this.y && $touch_state.y < $this.y + $this.ysize
+            {
+                $this.grab = 1
+            }
+        }       
+        
+        if $touch_state.up  //NOT ALWAYS HITTING THIS!  WHY?!?!?!?!?!
+        {
+            $this.grab = 0
+        }
+        
+        
+        if $this.grab
+        {
+            
+            $this.posx = scale($touch_state.x, $this.x, $this.x + $this.xsize, 0, 1)
+            $this.posy = scale($touch_state.y, $this.y, $this.y + $this.ysize, 1, 0)
+            if $this.posx > 1 { $this.posx = 1 }
+            if $this.posx < 0 { $this.posx = 0 }
+            if $this.posy > 1 { $this.posy = 1 }
+            if $this.posy < 0 { $this.posy = 0 }
+        }
+            
+    }
+    
+    
+    ret ($this)
+}
