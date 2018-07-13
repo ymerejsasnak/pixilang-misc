@@ -1,0 +1,85 @@
+//add set colors, etc
+
+// work on distinction between function as toggle and as just button (and rename as button?)
+
+fn create_button($x, $y, $xsize, $ysize, $text, $func, $obj)
+{
+
+	$this = new()
+	
+	$this.text = $text
+	$this.x = $x
+	$this.y = $y
+	$this.xsize = $xsize
+	$this.ysize = $ysize
+	$this.on = 0
+	
+	$this.func = $func
+	$this.obj = $obj
+	
+	$this.is_toggle = 0
+	
+	
+	$this.draw =
+	{
+	    $this = $1
+	    
+	    if $this.on
+	    {
+		    fbox($this.x, $this.y, $this.xsize, $this.ysize, WHITE)
+		    box($this.x, $this.y, $this.xsize, $this.ysize, BLACK)
+		    print($this.text, $this.x + $this.xsize / 2, 
+		          $this.y + $this.ysize / 2, BLACK)
+		}
+		else
+		{
+		    fbox($this.x, $this.y, $this.xsize, $this.ysize, BLACK)
+		    box($this.x, $this.y, $this.xsize, $this.ysize, WHITE)
+		    print($this.text, $this.x + $this.xsize / 2,
+		          $this.y + $this.ysize / 2, WHITE)		
+		}
+	}	
+	
+	
+	$this.update = 
+    {
+        $this = $1
+        $touch_state = $2
+        
+        if $touch_state.down
+        {
+            if $touch_state.x > $this.x && $touch_state.x < $this.x + $this.xsize &&
+               $touch_state.y > $this.y && $touch_state.y < $this.y + $this.ysize
+            {
+                if $this.is_toggle 
+                {
+                    $this.on = abs($this.on - 1)
+                    $this.func($this.on, $this.obj)
+                }
+                else 
+                { 
+                    $this.on = 1
+                    $this.func($this.on, $this.obj)
+                }
+            }
+        }
+        if $touch_state.up
+        {
+            if $this.is_toggle
+            {
+            
+            }
+            else
+            { 
+                $this.on = 0
+                $this.func($this.on, $this.obj)
+            }
+        }
+        
+	}   
+    
+	ret ($this)
+}
+
+
+

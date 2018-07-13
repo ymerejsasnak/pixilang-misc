@@ -1,4 +1,4 @@
-include "toggle.pixi"
+include "button.pixi"
 include "slider.pixi"
 include "wave_window.pixi"
 include "util.pixi" // needed by wave_window and slider
@@ -18,88 +18,101 @@ ymax = WINDOW_YSIZE / 2
 
 
 wav = load("demo1.wav")
-wav2 = load("demo1.wav")
 
-w = create_wave_window(wav, -50, -200, 150, 100)
-w2 = create_wave_window(wav2, 0, -100, 150, 100)
+w = create_wave_window(wav, -100, ymin, 250, 200)
 
 
+button1 = create_button(xmin, ymin, 200, 100, "1", playwav, w)
+button2 = create_button(xmin, ymin + 150, 200, 100, "2", toggleb1, button1)
 
-t = create_toggle(xmin, ymin, 200, 100, "1", tw, w)
-t2 = create_toggle(xmin, ymin + 150, 200, 100, "2", tw, w2)
+button2.is_toggle = 1
 
 
 s = create_slider(100, 0, 50, 200)
 
+
+touch_state = new()
+
+ups = 0
+downs = 0
+
 while(1)
 {
+    touch_state.down = 0
+    touch_state.up = 0
+    touch_state.move = 0
+    
 	while get_event() 
  	{ 
   		if EVT[ EVT_TYPE ] == EVT_QUIT { halt } 
   		
-  		if EVT[ EVT_TYPE ] == EVT_MOUSEBUTTONDOWN
-  		{
-  		    
-  		    
-  		    
-  		    x = EVT[ EVT_X ]
-  		    y = EVT[ EVT_Y ]
-  		    
-  		    s.touch(s, x, y)
-  		    t.touch(t, x, y)
-  		    t2.touch(t2, x, y)
-  		    
-  		}
+  		touch_state.move = ( EVT[EVT_TYPE] == EVT_MOUSEMOVE )
+  		touch_state.down = ( EVT[EVT_TYPE] == EVT_MOUSEBUTTONDOWN )
+  		touch_state.up = ( EVT[EVT_TYPE] == EVT_MOUSEBUTTONUP )
+  	  		
+  	    touch_state.x = EVT[ EVT_X ]
+  		touch_state.y = EVT[ EVT_Y ]
   		
-  		if EVT [EVT_TYPE] == EVT_MOUSEMOVE
-  		{
-  		
-  		    x = EVT[ EVT_X ]
-  		    y = EVT[ EVT_Y ]
-  		    s.move(s, x, y)
-  		}
-  		
-  		if EVT [EVT_TYPE] == EVT_MOUSEBUTTONUP
-  		{
-  		    s.touch(s)
-  		    
-  		    t.turnoff(t)
-  		    t2.turnoff(t2)
-  		}
+  		downs + touch_state.down
+  		ups + touch_state.up
   		
 	}
 	
-    clear(get_blend(WHITE, BLACK, 200))
-    
 	
+	//clear(get_blend(WHITE, BLACK, 200))
+	
+	
+	button1.update(button1, touch_state)
+	button2.update(button2, touch_state)
+	
+    
+    s.update(s, touch_state)
   	    
-  		    t.xsize = (s.pos + 0.5) * 100
-  	t.draw(t)
-  	t2.draw(t2)
-  	
-     //
-    
-    //
-     	
+    button1.xsize = (s.pos + 0.5) * 100
+  
+  		    
+  	button1.draw(button1)
+  	button2.draw(button2)
+  	     	
  	w.draw(w)
-    w2.draw(w2)
-    
     
     s.draw(s)
 	
-
+	
+	printnum(touch_state.down, 300, 200)  
+	printnum(touch_state.up, 300, 220)
+	printnum(touch_state.move, 300, 240)
+	printnum(touch_state.x, 300, 260)
+	printnum(touch_state.y, 300, 280)
+    
+    printnum(ups, 320, 220)
+    printnum(downs, 320, 200)
+    
+    
     frame()
 	
 
 }
 
 
-fn tw($on, $this)
+fn playwav($on, $wave)
 {
     if $on
   	{
-  	//set_audio_callback(audio_callback, w.sample_info + w2.sample_info, 44100, INT32, 2, AUDIO_FLAG_INTERP2)
-  	set_audio_callback( audio_callback, $this.sample_info, get_prop( $this.data, "sample_rate"), get_type( $this.data ), get_prop($this.data, "channels") ,AUDIO_FLAG_INTERP2 )
+  	set_audio_callback( audio_callback, $wave.sample_info, get_prop( $wave.data, "sample_rate"), get_type( $wave.data ), get_prop($wave.data, "channels") ,AUDIO_FLAG_INTERP2 )
   	}
     else {set_audio_callback(-1)}
+}
+
+
+fn toggleb1($on, $button1)
+{
+    if $on
+    {
+        $button1.is_toggle = 1
+    }
+    else
+    {
+        $button1.is_toggle = 0
+    }
 }
