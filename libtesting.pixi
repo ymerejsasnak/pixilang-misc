@@ -2,6 +2,7 @@ include "button.pixi"
 include "slider.pixi"
 include "wave_window.pixi"
 include "audiocallback.pixi"
+include "xypad.pixi"
 
 include "util.pixi" // needed by wave_window and slider
 
@@ -33,32 +34,49 @@ button2.is_toggle = 1
 
 
 s = create_slider(100, 0, 50, 200)
-
+xy = create_xypad(100, -100, 100, 100)
 
 touch_state = new()
-
+ touch_state.down = 0
+    touch_state.up = 0
+    touch_state.move = 0
+    
 ups = 0
 downs = 0
 
 while(1)
 {
-    touch_state.down = 0
-    touch_state.up = 0
-    touch_state.move = 0
     
 	while get_event() 
- 	{ 
+ 	{   
+        touch_state.down = 0
+    touch_state.up = 0
+    touch_state.move = 0 
+    
   		if EVT[ EVT_TYPE ] == EVT_QUIT { halt } 
   		
-  		touch_state.move = ( EVT[EVT_TYPE] == EVT_MOUSEMOVE )
-  		touch_state.down = ( EVT[EVT_TYPE] == EVT_MOUSEBUTTONDOWN )
-  		touch_state.up = ( EVT[EVT_TYPE] == EVT_MOUSEBUTTONUP )
-  	  		
+  		if EVT[EVT_TYPE] == EVT_MOUSEBUTTONUP
+            { touch_state.up = 1 }
+        
+  		if EVT[EVT_TYPE] == EVT_MOUSEMOVE 
+            { touch_state.move = 1 }
+        
+  		if EVT[EVT_TYPE] == EVT_MOUSEBUTTONDOWN 
+            { touch_state.down = 1 }
+  		
   	    touch_state.x = EVT[ EVT_X ]
   		touch_state.y = EVT[ EVT_Y ]
   		
   		downs + touch_state.down
   		ups + touch_state.up
+        
+        
+        button1.update(button1, touch_state)
+	    button2.update(button2, touch_state)
+	
+    
+          s.update(s, touch_state)
+    	xy.update(xy, touch_state)
   		
 	}
 	
@@ -69,12 +87,8 @@ while(1)
 	
 	
 	
-	button1.update(button1, touch_state)
-	button2.update(button2, touch_state)
 	
-    
-    s.update(s, touch_state)
-  	    
+        
     button1.xsize = (s.pos + 0.5) * 100
   
   		    
@@ -84,7 +98,8 @@ while(1)
  	w.draw(w)
     
 	s.draw(s)
-	
+	xy.draw(xy)
+    
 	printnum(touch_state.down, 300, 200)  
 	printnum(touch_state.up, 300, 220)
 	printnum(touch_state.move, 300, 240)
@@ -116,6 +131,7 @@ fn toggleb1($on, $button1)
     if $on
     {
         $button1.is_toggle = 1
+        
     }
     else
     {

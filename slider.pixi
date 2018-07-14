@@ -56,9 +56,10 @@ fn create_slider($x, $y, $xsize, $ysize)
             {
                 $this.grab = 1
             }
+            
         }       
         
-        if $touch_state.up  //NOT ALWAYS HITTING THIS!  WHY?!?!?!?!?!
+        if $touch_state.up  
         {
             $this.grab = 0
             if $this.sticky

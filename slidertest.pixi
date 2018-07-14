@@ -16,23 +16,30 @@ ymax = get_ysize(scr) / 2
 
 s = create_slider(0, 0, 50, 200)
 
-s.sticky = 1
+//s.sticky = 1
 
 touch_state = new()
-
-while(1)
-{
     touch_state.down = 0
     touch_state.up = 0
     touch_state.move = 0
+    
+    
+while(1)
+{
+
     
 	while get_event() 
  	{ 
   		if EVT[ EVT_TYPE ] == EVT_QUIT { halt } 
   		
-  		touch_state.up = ( EVT[EVT_TYPE] == EVT_MOUSEBUTTONUP )
-  		touch_state.move = ( EVT[EVT_TYPE] == EVT_MOUSEMOVE )
-  		touch_state.down = ( EVT[EVT_TYPE] == EVT_MOUSEBUTTONDOWN )
+  		if EVT[EVT_TYPE] == EVT_MOUSEBUTTONUP
+            { touch_state.up = 1 }
+        
+  		if EVT[EVT_TYPE] == EVT_MOUSEMOVE 
+            { touch_state.move = 1 }
+        
+  		if EVT[EVT_TYPE] == EVT_MOUSEBUTTONDOWN 
+            { touch_state.down = 1 }
   		
   	  		
   	    touch_state.x = EVT[ EVT_X ]
